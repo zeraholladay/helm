@@ -103,5 +103,14 @@ Creates and syncs an ArgoCD application from the Helm template.
 
 ---
 
+---
+
+## Additions and TODOs
+
+- Helm Controller (Helm Operator)
+- Argo Auth
+
+---
+
 ## License
 This script is open-source and available under the [MIT License](LICENSE).
