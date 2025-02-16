@@ -23,6 +23,18 @@ function argo_login {
     argocd login localhost:8080 --username admin --password $password
 }
 
+function helm_template {
+    namespace=$1
+    app=$2
+
+    # --values ./my-app-chart/values.yaml \
+    helm template ${namespace}-argocdapp ./charts/${app} \
+        --namespace $namespace \
+        --output-dir argocd-apps
+
+    # Then push to git before running argo_install
+}
+
 function argo_install {
     namespace=$1
 
@@ -33,14 +45,4 @@ function argo_install {
         --dest-namespace $namespace
 }
 
-function helm_template {
-    namespace=$1
-    app=$2
 
-    # --values ./my-app-chart/values.yaml \
-    helm template ${namespace}-argocdapp ./charts/${app} \
-        --namespace $namespace \
-        --output-dir argocd-apps/${namespace}
-
-    # Then push to git before running argo_install
-}

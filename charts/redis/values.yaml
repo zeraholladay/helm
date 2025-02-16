@@ -1,4 +1,4 @@
-namespace: redis-namespace
+namespace: redis
 
 service:
   name: redis
