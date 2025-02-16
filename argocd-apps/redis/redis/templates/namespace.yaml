@@ -1,0 +1,8 @@
+---
+# Source: redis/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis-namespace
+  labels:
+    app: redis
