@@ -1,0 +1,19 @@
+namespace: redis-namespace
+
+service:
+  name: redis
+  port: 6379
+
+statefulset:
+  name: redis
+  replicas: 1
+  image: redis:7.2
+  storage:
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
