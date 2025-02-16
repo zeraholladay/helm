@@ -3,6 +3,8 @@
 
 This script automates the installation and management of ArgoCD on a Kubernetes cluster using Helm and the ArgoCD CLI. It includes commands to create Helm templates, manage ArgoCD applications, and handle port forwarding and logins.
 
+As of 2025-02-16, this only works with the `redis` chart, which is a simple Redis Stateful set.
+
 ## Prerequisites
 
 Before running this script, ensure that the following tools are installed and configured:
@@ -16,7 +18,10 @@ Before running this script, ensure that the following tools are installed and co
 - **kubectl:** To interact with the Kubernetes cluster.  
   [Install kubectl](https://kubernetes.io/docs/tasks/tools/)
 
-- **ArgoCD CLI:** To manage ArgoCD applications from the command line.  
+- **Helm:** Render Helm Templates
+  [Install Helm](https://helm.sh/docs/intro/install/)
+
+- **ArgoCD:** To manage ArgoCD applications from the command line.
   [Install ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
 
 ### Verify Installations:
@@ -24,6 +29,7 @@ Before running this script, ensure that the following tools are installed and co
 docker --version
 minikube version
 kubectl version --client
+helm version
 argocd version
 ```
 
@@ -78,72 +84,22 @@ Logs in to ArgoCD `cli` using the initial admin password.
 ### 5. Create Helm Template
 Generates Helm templates for an application.
 ```bash
-./argo.bash template <namespace> <app>
-```
-Example:
-```bash
-./argo.bash template dev my-app
+    # input redis and redis
+    read namespace
+    read app
+
+    helm template "${namespace}-argocdapp" ./charts/"${app}" \
+        --namespace "$namespace" \
+        --output-dir argocd-apps
+
+git add .; git commit -m "Testing"; git push
 ```
 
 ### 6. Create ArgoCD Application
 Creates and syncs an ArgoCD application from the Helm template.
 ```bash
-./argo.bash app-create <namespace>
+./argo.bash app-create redis
 ```
-Example:
-```bash
-./argo.bash app-create dev
-```
-
----
-
-## Example Workflow
-1. **Install ArgoCD:**  
-   ```bash
-   ./argo.bash install
-   ```
-2. **Port-forward to access the dashboard:**  
-   ```bash
-   ./argo.bash port-forward # & or in another terminal
-   ```
-3. **Retrieve the initial admin password:**  
-   ```bash
-   ./argo.bash password
-   ```
-4. **Log in to ArgoCD:**  
-   ```bash
-   ./argo.bash login
-   ```
-5. **Generate Helm templates for an application:**  
-   ```bash
-   ./argo.bash template dev my-app
-   ```
-6. **Create and sync the ArgoCD application:**  
-   ```bash
-   ./argo.bash app-create dev
-   ```
-
----
-
-## Notes
-- The script assumes you have a running Kubernetes cluster (e.g., via Minikube).
-- Helm will create a namespace called `argocd` if it does not exist.
-- Push Helm templates to your repository before running `app-create`.
-
----
-
-## Troubleshooting
-
-- **If `kubectl` cannot connect to the cluster:**  
-  ```bash
-  minikube status
-  minikube kubectl -- get pods -A
-  ```
-- **If ArgoCD service is not exposed:**  
-  Ensure `port-forward` is running or check ArgoCD service type:
-  ```bash
-  kubectl get svc -n argocd
-  ```
 
 ---
 

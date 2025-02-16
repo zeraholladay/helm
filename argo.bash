@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function argo-install {
+function argo_install {
     helm repo add argo https://argoproj.github.io/argo-helm
     helm repo update
     helm install argocd argo/argo-cd \
@@ -9,30 +9,20 @@ function argo-install {
         --set server.service.type=LoadBalancer
 }
 
-function argo-portForward {
+function argo_port_forward {
     kubectl port-forward svc/argocd-server -n argocd 8080:443
 }
 
-function argo-password {
+function argo_password {
     password=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d)
     echo "$password"
 }
 
 function argo-login {
-    password=$(argo-password)
+    password=$(argo_password)
     argocd login localhost:8080 --username admin --password "$password"
 }
 
-function helm_template {
-    namespace=$1
-    app=$2
-
-    helm template "${namespace}-argocdapp" ./charts/"${app}" \
-        --namespace "$namespace" \
-        --output-dir argocd-apps
-
-    echo "Helm template created for namespace: $namespace, app: $app"
-}
 
 function argo_app_create {
     namespace=$1
@@ -49,23 +39,16 @@ function argo_app_create {
 # Case statement for command selection
 case "$1" in
   install)
-    argo-install
+    argo_install
     ;;
   port-forward)
-    argo-portForward
+    argo_port_forward
     ;;
   password)
-    argo-password
+    argo_password
     ;;
   login)
     argo-login
-    ;;
-  template)
-    if [ -z "$2" ] || [ -z "$3" ]; then
-      echo "Usage: $0 template <namespace> <app>"
-      exit 1
-    fi
-    helm_template "$2" "$3"
     ;;
   app-create)
     if [ -z "$2" ]; then
